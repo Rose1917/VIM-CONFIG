@@ -10,6 +10,7 @@
 " properly set to work with the Vim-related packages available in Debian.
 runtime! debian.vim
 
+
 " Vim will load $VIMRUNTIME/defaults.vim if the user does not have a vimrc.
 " This happens after /etc/vim/vimrc(.local) are loaded, so it will override
 " any settings in these files.
@@ -36,7 +37,7 @@ augroup END
 
 " If using a dark background within the editing area and syntax highlighting
 " turn on this option as well
-set background=dark
+" set background=dark
 
 " Uncomment the following to have Vim jump to the last position when
 " reopening a file
@@ -347,41 +348,6 @@ autocmd FileType cpp set keywordprg=cppman
 
 
 " =============================================
-" code runner
-" =============================================
-map <F5> :call CompileRun()<CR>
-imap <F5> <Esc>:call CompileRun()<CR>
-vmap <F5> <Esc>:call CompileRun()<CR>
-
-func! CompileRun()
-exec "w"
-exec "!clear"
-if &filetype == 'c'
-    exec "!gcc % -o %< && !time ./%<; rm ./%<"
-elseif &filetype == 'cpp'
-    exec "!g++ % -g -o %< && !time ./%<; rm ./%<"
-elseif &filetype == 'java'
-    exec "!javac % && !time java %; rm ./%<"
-elseif &filetype == 'sh'
-    exec "!time bash %"
-elseif &filetype == 'python'
-    exec "!time python3 %"
-elseif &filetype == 'html'
-    exec "!google-chrome % &"
-elseif &filetype == 'go'
-    exec "!go build %<"
-    exec "!time go run %"
-elseif &filetype == 'matlab'
-    exec "!time octave %"
-elseif &filetype == 'rust'
-	exec "!cargo r"
-elseif &filetype == 'javascript'
-        exec "!node %"
-endif
-endfunc
-
-
-" =============================================
 " indent
 " =============================================
 set autoindent 
@@ -428,6 +394,7 @@ set cmdheight=2
 " Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
 " delays and poor user experience.
 set updatetime=300
+
 
 " Don't pass messages to |ins-completion-menu|.
 set shortmess+=c
@@ -478,7 +445,9 @@ nmap <leader>e <Cmd>CocCommand explorer<CR>
 " // coc file explorer
 " =============================================
 nmap <leader>5 <Cmd>AsyncTask file-build<CR>
-nmap <leader>9 <Cmd>AsyncTask file-run<CR>
+nmap <leader>6 <Cmd>AsyncTask file-run<CR>
+nmap <leader>7 <Cmd>AsyncTask project-build<CR>
+nmap <leader>8 <Cmd>AsyncTask project-run<CR>
 
 " Highlight the symbol and its references when holding the cursor
 autocmd CursorHold * silent call CocActionAsync('highlight')
@@ -491,6 +460,43 @@ nmap <leader>rn <Plug>(coc-rename)
 " =============================================
 hi Pmenu        ctermfg=white ctermbg=black gui=NONE guifg=white guibg=black
 hi PmenuSel     ctermfg=white ctermbg=blue gui=bold guifg=white guibg=purple
+
+" ===============================================================
+" ctrl-f and ctrl-b to scroll down and scroll up the float window
+" ===============================================================
+" Remap <C-f> and <C-b> to scroll float windows/popups
+if has('nvim-0.4.0') || has('patch-8.2.0750')
+  nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+  nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+  inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
+  inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
+  vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+  vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+endif
+
+" Use CTRL-S for selections ranges
+" Requires 'textDocument/selectionRange' support of language server
+nmap <silent> <C-k> <Plug>(coc-range-select)
+xmap <silent> <C-k> <Plug>(coc-range-select)
+
+
+
+
+" Format
+" =============================================
+command! -nargs=0 Format :call CocActionAsync('format')
+
+" Add `:Fold` command to fold current buffer
+command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+
+" Add `:OR` command for organize imports of the current buffer
+command! -nargs=0 OR   :call     CocActionAsync('runCommand', 'editor.action.organizeImport')
+
+" Add `:Terminal` commandto open a terminal below the current buffer
+command!  Terminal below terminal ++rows=6
+
+nnoremap <leader>w  :<C-u>CocList -I symbols<cr>
+
 
 
 

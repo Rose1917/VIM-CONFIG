@@ -11,7 +11,8 @@
     "coc-explorer": ">=0.26.6",
     "coc-dictionary": ">=1.2.2",
     "coc-word": ">=1.2.2",
-    "coc-marketplace": ">=1.9.0"
+    "coc-marketplace": ">=1.9.0",
+    "coc-todo-tree": ">=0.0.14"
   },
   "disabled": [],
   "locked": []
